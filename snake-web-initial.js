@@ -4,18 +4,18 @@
 //Disable analytics
 window.navigator.sendBeacon = function() {
   //Do nothing
-  console.log('beacon disabled');
+  //console.log('beacon disabled');
 }
 
 //Disable google logging
 window.google.log = function() {
   //Do nothing
-  console.log('google.log disabled');
+  //console.log('google.log disabled');
 }
 
 window.google.logUrl = function() {
   //Do nothing
-  console.log('google.logUrl disabled');
+  //console.log('google.logUrl disabled');
 }
 
 window.webSnake = {};
