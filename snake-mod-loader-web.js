@@ -671,7 +671,8 @@ let addModSelectorPopup = function() {
       }
 
       //Apply background colour on fbx
-      if typeof advancedSettings.backgroundColor === 'string') {
+      //web snake
+      if ((WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade')) && typeof advancedSettings.backgroundColor === 'string') {
         document.body.style.backgroundColor = advancedSettings.backgroundColor;
       }
 
