@@ -29,7 +29,7 @@
     "levelEditorMod": {
       "displayName": "Level Editor Mod",
       "hasUrl": true,
-      "url": "leveleditormod.js",
+      "url": "https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeLevelEditor/main/modloadercode.js",
       "modDescription": {
         "descriptionName": "Level Editor Mod",
         "authors": [
