@@ -2,6 +2,7 @@ let IS_DEVELOPER_MODE = false;
 let VERSION = '1.0.11';//Gets set to version in build script
 const UPDATE_URL = 'https://github.com/DarkSnakeGang/GoogleSnakeModLoader/raw/main/build/snake-mod-loader-fbx.user.js';//Gets set from build script
 const WEB_VERSION = true;//web snake
+const IS_FBX_OR_WEB = WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade');
 
 //web snake
 if(localStorage.getItem('snakeForceDevMode')) {
@@ -672,7 +673,7 @@ let addModSelectorPopup = function() {
 
       //Apply background colour on fbx
       //web snake
-      if ((WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade')) && typeof advancedSettings.backgroundColor === 'string') {
+      if (IS_FBX_OR_WEB && typeof advancedSettings.backgroundColor === 'string') {
         document.body.style.backgroundColor = advancedSettings.backgroundColor;
       }
 
@@ -841,14 +842,14 @@ let addModSelectorPopup = function() {
         }
       }, 5000);
     }
-    if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade') && typeof advancedSettings.backgroundColor === 'string') {
+    if(IS_FBX_OR_WEB && typeof advancedSettings.backgroundColor === 'string') {
       document.body.style.backgroundColor = advancedSettings.backgroundColor;
     }
   }
 
   function applyMuteToGame() {
     //On fbx we can mute right way. On search, we need to wait until the game is visible.
-    if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade')) {
+    if(IS_FBX_OR_WEB) {
       //Match mute button, but only if it's on (i.e. the image url includes the word up instead of the word off)
       let muteButton = document.querySelector('img.EFcTud[jsaction="DGXxE"]:not([src*="off"])');
       if(muteButton) {muteButton.click();}
@@ -872,7 +873,7 @@ let addModSelectorPopup = function() {
 
   function applyFullscreenToGame() {
     //On fbx we can fullscreen right way. On search, we need to wait until the game is visible.
-    if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade')) {
+    if(IS_FBX_OR_WEB) {
       //Match fullscreen button, but only if it's on (i.e. the image url includes the word up instead of the word off)
       let fullscreenButton = document.querySelector('img.EFcTud[jsaction="zeJAAd"]:not([src*="exit"])');
       if(fullscreenButton) {fullscreenButton.click();}
@@ -916,7 +917,7 @@ let addModSelectorPopup = function() {
       }
 
       //Have an option to not show the popup on either fbx or search snake (e.g. if only one of them is broken)
-      if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade') ? modInfo.startMessage.excludeFbx : modInfo.startMessage.excludeSearch) {
+      if(IS_FBX_OR_WEB ? modInfo.startMessage.excludeFbx : modInfo.startMessage.excludeSearch) {
         return;
       }
 
