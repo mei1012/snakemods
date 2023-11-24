@@ -32,7 +32,7 @@ window.webSnaked.blockedUrls = [
 
 window.oldFetch = window.fetch;
 
-window.fetch(url) {
+window.fetch = function(url) {
   if(typeof url === 'string' && window.webSnake.blockedUrls.includes(url)) {
     //do nothing
     console.log('fetch blocked: ' + url);
