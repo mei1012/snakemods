@@ -841,7 +841,7 @@ let addModSelectorPopup = function() {
         }
       }, 5000);
     }
-    if(window.location.href.includes('fbx?fbx=snake_arcade') && typeof advancedSettings.backgroundColor === 'string') {
+    if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade') && typeof advancedSettings.backgroundColor === 'string') {
       document.body.style.backgroundColor = advancedSettings.backgroundColor;
     }
   }
