@@ -848,7 +848,7 @@ let addModSelectorPopup = function() {
 
   function applyMuteToGame() {
     //On fbx we can mute right way. On search, we need to wait until the game is visible.
-    if(window.location.href.includes('fbx?fbx=snake_arcade')) {
+    if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade')) {
       //Match mute button, but only if it's on (i.e. the image url includes the word up instead of the word off)
       let muteButton = document.querySelector('img.EFcTud[jsaction="DGXxE"]:not([src*="off"])');
       if(muteButton) {muteButton.click();}
@@ -872,7 +872,7 @@ let addModSelectorPopup = function() {
 
   function applyFullscreenToGame() {
     //On fbx we can fullscreen right way. On search, we need to wait until the game is visible.
-    if(window.location.href.includes('fbx?fbx=snake_arcade')) {
+    if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade')) {
       //Match fullscreen button, but only if it's on (i.e. the image url includes the word up instead of the word off)
       let fullscreenButton = document.querySelector('img.EFcTud[jsaction="zeJAAd"]:not([src*="exit"])');
       if(fullscreenButton) {fullscreenButton.click();}
@@ -916,7 +916,7 @@ let addModSelectorPopup = function() {
       }
 
       //Have an option to not show the popup on either fbx or search snake (e.g. if only one of them is broken)
-      if(window.location.href.includes('fbx?fbx=snake_arcade') ? modInfo.startMessage.excludeFbx : modInfo.startMessage.excludeSearch) {
+      if(WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade') ? modInfo.startMessage.excludeFbx : modInfo.startMessage.excludeSearch) {
         return;
       }
 
