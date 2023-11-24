@@ -32,7 +32,7 @@ let externalConfig = {
 
     //Make a synchronous request for modInfo JSON file
     let req = new XMLHttpRequest();
-    req.open('GET', 'mod-info.json', false);
+    req.open('GET', 'https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeModLoader/main/build/mod-info.json', false);
     req.onload = function() {
       if(this.status === 200) {
         try {
