@@ -138,13 +138,13 @@ document.body.appendChild = function(el) {
     let mapping = window.webSnake.urlMap.find(m=>m.oldUrl === el.src);
 
     if(mapping && mapping.newUrl) {
-      console.log('Redirecting url: ' + el.src);
+      window.webSnake.logUrlChanges && console.log('Redirecting url: ' + el.src);
       el.src = mapping.newUrl;
     }
 
     //Also check if the url is one of the blocked ones
     if(window.webSnake.blockedUrls.includes(el.src)) {
-      console.log('Blocking url: ' + el.src);
+      window.webSnake.logUrlChanges && console.log('Blocking url: ' + el.src);
       return;
     }
   }

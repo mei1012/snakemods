@@ -1,24 +1,25 @@
 //Code in here runs before snake-mod-loader-web.js
 //Useful to help set stuff up specific to the web version, that doesn't belong in the mod-loader script
 
+window.webSnake = {};
+window.webSnake.logUrlChanges = false;
+
 //Disable analytics
 window.navigator.sendBeacon = function() {
   //Do nothing
-  //console.log('beacon disabled');
+  window.webSnake.logUrlChanges && console.log('beacon disabled');
 }
 
 //Disable google logging
 window.google.log = function() {
   //Do nothing
-  //console.log('google.log disabled');
+  window.webSnake.logUrlChanges && console.log('google.log disabled');
 }
 
 window.google.logUrl = function() {
   //Do nothing
-  //console.log('google.logUrl disabled');
+  window.webSnake.logUrlChanges && console.log('google.logUrl disabled');
 }
-
-window.webSnake = {};
 
 window.webSnake.urlMap = [
   {
@@ -43,7 +44,7 @@ window.fetch = function(url) {
     let mapping = window.webSnake.urlMap.find(m=>m.oldUrl === url);
 
     if(mapping && mapping.newUrl) {
-      console.log('Redirecting url: ' + url);
+      window.webSnake.logUrlChanges && console.log('Redirecting url: ' + url);
       arguments[0] = mapping.newUrl;
     }
   }
