@@ -16,7 +16,32 @@ function snakeSetDevMode(bool) {
 
 //web snake
 if(WEB_VERSION) {
+  //Alter version displayed
   VERSION += ' (web)';
+
+  //Allow changing mod based on the "mod" search parameter
+  let currentUrl = new URL(document.location);
+  let params = currentUrl.searchParams;
+  let mod = params.get("mod");
+
+  if(typeof mod === 'string') {
+    localStorage.setItem('snakeChosenMod', mod);
+
+    //Delete the mod parameter
+    params.delete('mod');
+    let newQueryString = params.toString();
+    
+    let newPath;
+    if(newQueryString === '') {
+      newPath = currentUrl.pathname;
+    } else {
+      newPath = currentUrl.pathname + '?' + newQueryString;
+    }
+    
+    //Change url to remove the mod=xyz part
+    //This is useful if the xyz part isn't a proper url, as otherwise we get stuck in a loop of setting a bad mod
+    window.history.replaceState({}, document.title, newPath);
+  }
 }
 
 //External config that determines which mods the modloader has
