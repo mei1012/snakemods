@@ -31,6 +31,19 @@ window.webSnake.urlMap.forEach(rule => {
 });
 */
 
+//Block urls in xhr
+window.oldXhrOpen = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open = function () {
+  let url = makeUrlAbsolute(arguments[1]);
+  
+  if(window.webSnake.blockedUrls.includes(url)) {
+    window.webSnake.logUrlChanges && console.log('Blocking url: ' + url);
+    throw new Error('Blocking url ' + url); //Slightly sketchy to error here as it may have side effects. This seems ok in practise
+  }
+
+  return oldXhrOpen.apply(this, arguments);
+};
+
 window.oldFetch = window.fetch;
 
 window.fetch = function(url) {
@@ -44,4 +57,12 @@ window.fetch = function(url) {
   }
 
   return window.oldFetch(...arguments);
+}
+
+function makeUrlAbsolute(url) {
+  //If url starts with / then add https://www.google.com
+  if (/^\/[^\/]/.test(url)) {
+    url = "https://www.google.com" + url;
+  }
+  return url;
 }
