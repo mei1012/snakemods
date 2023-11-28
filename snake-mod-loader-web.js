@@ -136,8 +136,28 @@ document.body.appendChild = function(el) {
   //Basic checks to filter out scripts which can't be the snake script
   if(el.src === '' || el.src.includes('apis.google.com') || !el.src.includes('www.google')) return document.body.appendChildOld(el);
 
+  //web snake
+  if(WEB_VERSION) {
+    //Check if url is one of the ones we redirect (e.g. to avoid cors errors or fix the version)
+    let mapping = window.webSnake.urlMap.find(m=>m.oldUrl === el.src);
+
+    if(mapping && mapping.newUrl) {
+      window.webSnake.logUrlChanges && console.log('Redirecting url: ' + el.src);
+      el.src = mapping.newUrl;
+    }
+
+    //Also check if the url is one of the blocked ones
+    if(window.webSnake.blockedUrls.includes(el.src)) {
+      window.webSnake.logUrlChanges && console.log('Blocking url: ' + el.src);
+      return;
+    }
+  }
+
   //Check if the script is either the funbox experiment one, or has xjs=s1 (for fbx link), or has just xjs folder (for search snake)
   let isSrcCorrectFormat = el.src.includes('funbox') || el.src.includes('xjs=s1') || (!window.location.href.includes('fbx?fbx=snake_arcade') && el.src.includes('/xjs/'));
+  
+  isSrcCorrectFormat = isSrcCorrectFormat || (WEB_VERSION && el.src.includes('snake.js')); //As we apply url re-writes early on, we let snake.js in the web version through here
+
   if(!isSrcCorrectFormat) return document.body.appendChildOld(el);
 
   //Check if we're actually running a mod
@@ -157,23 +177,6 @@ document.body.appendChild = function(el) {
     Run some code afterwards depending on what google snake mod was chosen
   */
   const req = new XMLHttpRequest();
-
-  //web snake
-  if(WEB_VERSION) {
-    //Check if url is one of the ones we redirect (e.g. to avoid cors errors or fix the version)
-    let mapping = window.webSnake.urlMap.find(m=>m.oldUrl === el.src);
-
-    if(mapping && mapping.newUrl) {
-      window.webSnake.logUrlChanges && console.log('Redirecting url: ' + el.src);
-      el.src = mapping.newUrl;
-    }
-
-    //Also check if the url is one of the blocked ones
-    if(window.webSnake.blockedUrls.includes(el.src)) {
-      window.webSnake.logUrlChanges && console.log('Blocking url: ' + el.src);
-      return;
-    }
-  }
 
   req.open('GET', el.src, false);
 
