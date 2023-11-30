@@ -1,8 +1,9 @@
 let IS_DEVELOPER_MODE = false;
-let VERSION = '1.0.11';//Gets set to version in build script
+let VERSION = '1.1.0';//Gets set to version in build script
 const UPDATE_URL = 'https://github.com/DarkSnakeGang/GoogleSnakeModLoader/raw/main/build/snake-mod-loader-fbx.user.js';//Gets set from build script
 const WEB_VERSION = true;//web snake
 const IS_FBX_OR_WEB = WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade');
+const WEB_BASE_URL = new URL(window.location.href).origin + '/'; //Whatever goes at the start of the url, for example it could be this https://darksnakegang.github.io/site/';
 
 //web snake
 if(localStorage.getItem('snakeForceDevMode')) {
@@ -212,7 +213,29 @@ document.body.appendChild = function(el) {
       throw new Error(errMessage);
     } 
 
-    if(modsConfig[currentlySelectedMod].hasUrl) {
+    //Here we request the code for a particular mod
+    if(!modsConfig[currentlySelectedMod].hasUrl) {
+      //Do nothing (for example, if it's the testMod then we don't need to request it)
+    } else if(WEB_VERSION && Array.isArray(modsConfig[currentlySelectedMod].web) && modsConfig[currentlySelectedMod].web.length > 0) {
+      let gameVersion = getGameVersionFromUrl();
+
+      let webVersion = modsConfig[currentlySelectedMod].web.find(v=>v.version === gameVersion);
+
+      if(typeof webVersion !== 'undefined') {
+        const modUrl = webVersion.url;
+
+        //Load and run the code for this mod.
+        console.log(`Retrieving code for this mod for version ${gameVersion} from ${modUrl}`);
+  
+        loadAndRunCodeSynchronous(modUrl);
+      } else {
+        //We are on a game version that this mod does not support. Redirect to the latest game version that this mod supports.
+        const supportedVersionsArray = modsConfig[currentlySelectedMod].web.map(v=>v.version);
+        const latestSupportedVersion = Math.max.apply(null, supportedVersionsArray);
+
+        redirectToSpecificGameVersion(latestSupportedVersion);
+      }
+    } else {
       const modUrl = modsConfig[currentlySelectedMod].url;
 
       //Load and run the code for this mod.
@@ -428,8 +451,21 @@ let addModSelectorPopup = function() {
                         <label style="color:var(--mod-loader-font-col) !important"><input id="custom-url" type="text"> Custom Mod Url</label><br>`;
   }
 
+  let gameVersion = '';
+  if(WEB_VERSION) {
+    gameVersion = `
+    <div style="margin-top: 5px;">
+      <label for="mod-game-version">Game Version:</label>
+      <select name="mod-game-version" id="mod-game-version">
+        <option value="wait">loading...</option>
+      </select>
+      <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/about_game_versions.md" target="_blank" style="margin-left:10px; color:var(--mod-loader-link-font-col)">about versions</a>
+    </div>
+    `;
+  }
+
   const modSelectorModal = `
-  <div id="mod-selector-dialogue" style="display: block;margin:40px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;">
+  <div id="mod-selector-dialogue" style="display: block;margin:30px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;">
     <div style="display: flex;justify-content: space-between;align-items: center;margin: 0px 0px 15px 0px;border: 2px solid var(--mod-loader-title-border);background-color: var(--mod-loader-title-bg);border-radius: 2px;">
       <span><a target="_blank" href="https://github.com/DarkSnakeGang"><img title="DarkSnakeGang github" style="margin-left:3px; margin-top:2px" src="https://www.google.com/logos/fnbx/snake_arcade/v3/speed_00.png" alt="" height="34"></a></span>
       <h1 style="font-size: 2em;font-weight: bold;font-family: &quot;Century Gothic&quot;, sans-serif;text-align: center;color: #4674e9;margin-top: 0;margin-bottom: 0;">Snake Mod Loader</h1>
@@ -443,6 +479,7 @@ let addModSelectorPopup = function() {
         ${modDescriptions}
       </div>
     </div>
+    ${gameVersion}
 
     <div id="advanced-options" style="display:none">
       <hr style="margin-block-start: 0.5em; margin-block-end: 0.5em;">
@@ -554,11 +591,14 @@ let addModSelectorPopup = function() {
     document.getElementById('mod-name-span').textContent = 'None';
   }
 
+  attemptRenderGameVersionOptions(currentlySelectedMod, true);
+
   //Update the checked/ticked mod when clicking on any of the radio buttons. Also show the description for it.
   [...document.querySelectorAll('input[type="radio"][name="mod-selector"]')].forEach(radioEl=>{
     radioEl.addEventListener('click', function(){
       //Mark mod as selected for when we hit apply
       newlySelectedMod = this.value;
+      attemptRenderGameVersionOptions(this.value, false);
       showSettingChanged();
       [...document.getElementsByClassName('mod-description')].forEach(el=>{
         el.style.display = 'none';
@@ -567,6 +607,10 @@ let addModSelectorPopup = function() {
       });
     });
   });
+
+  if(WEB_VERSION) {
+    document.getElementById('mod-game-version').addEventListener('change',showSettingChanged);
+  }
 
   //Load advanced settings
   let advancedSettings = JSON.parse(localStorage.getItem('snakeAdvancedSettings')) ?? {};
@@ -671,8 +715,19 @@ let addModSelectorPopup = function() {
       }
     }
 
+    let gameVersionChanged = false;
+    if(WEB_VERSION) {
+      const originalGameVersion = getGameVersionFromUrl();
+
+      const newGameVersion = parseInt(document.getElementById('mod-game-version').value);
+
+      if(originalGameVersion !== newGameVersion) {
+        gameVersionChanged = true;
+      }
+    }
+
     //Skip if settings/mod chosen are the same as before.
-    if(shallowEquality && newlySelectedMod === currentlySelectedMod) {
+    if(shallowEquality && newlySelectedMod === currentlySelectedMod && !gameVersionChanged) {
       alert('Settings are the same as before!')
       return;
     }
@@ -683,7 +738,10 @@ let addModSelectorPopup = function() {
 
     //Refresh if the mod has changed or the developer settings (custom mod name/url) have been changed
     //otherwise apply the settings to the "live" game
-    if(
+    if(WEB_VERSION && gameVersionChanged) {
+      const newGameVersion = parseInt(document.getElementById('mod-game-version').value);
+      redirectToSpecificGameVersion(newGameVersion);
+    } else if(
         newlySelectedMod !== currentlySelectedMod || 
         (advancedSettings.hasOwnProperty('customModName') && advancedSettings.customModName !== advancedSettingsOriginal.customModName) ||
         (advancedSettings.hasOwnProperty('customUrl') && advancedSettings.customUrl !== advancedSettingsOriginal.customUrl)
@@ -1035,6 +1093,95 @@ let addModSelectorPopup = function() {
 
     window.showSnakeErrMessage = true;//Used to prevent the indicator being auto-hidden
   }
+}
+
+//Generate the game versions option dropdown for the mod-game-version select element
+function attemptRenderGameVersionOptions(selectedMod, initial = false) {
+  if(!WEB_VERSION) {
+    //Only available for web version
+    return;
+  }
+
+  let modsConfig = externalConfig.modInfo.modsConfig;
+
+  let versionsArray = []; //Contains the versions we want to show in dropdown
+
+  //"none" mod and similar will show all versions in dropdown
+  let mightHaveVersionsSpecified = modsConfig.hasOwnProperty(selectedMod) && ['customUrl', 'testMod'].includes(selectedMod) === false;
+
+  if(mightHaveVersionsSpecified) {
+    //Try to get versions that this mod supports
+    let webVersions;
+
+    webVersions = modsConfig[selectedMod].web;
+
+    if(Array.isArray(webVersions) && webVersions.length !== 0) {
+      versionsArray = webVersions.map(v=>v.version);
+
+      //Check for invalid version numbers
+      if(versionsArray.find(v=>typeof v !== 'number' || !Number.isInteger(v) || v <= 0)) {
+        alert('Invalid game version numbers for selected mod');
+        throw new Error('Illegal version numbers for selected mod, these should be integers');
+      }
+
+      //Strip out version numbers that are too high
+      versionsArray = versionsArray.filter(v=>v<=webLatestVersion);
+      versionsArray = versionsArray.sort();
+    }
+  }
+
+  //Fallback behaviour is to just list versions as 1, 2, 3, ..., webLatestVersion
+  if(versionsArray.length === 0) {
+    versionsArray = new Array(webLatestVersion).fill(null).map((_, i)=>i + 1);
+  }
+
+  const versionsDropDown = document.getElementById('mod-game-version');
+
+  versionsDropDown.innerHTML = '';
+  
+  //Add options to the versions from high to low
+  for(let i = versionsArray.length - 1; i >= 0; i--) {
+    let option = document.createElement('option');
+    option.value = versionsArray[i];
+    option.textContent = versionsArray[i];
+
+    versionsDropDown.appendChild(option);
+  }
+
+  //Pre-select the correct option
+  if(initial) {
+    let currentGameVersion = getGameVersionFromUrl();
+
+    //Default to the first version number greater than the one in the url
+    let version = versionsArray.find(v=>v >= currentGameVersion) ?? versionsArray[versionsArray.length - 1];
+
+    versionsDropDown.value = version;
+  } else {
+    versionsDropDown.value = versionsArray[versionsArray.length - 1];
+  }
+}
+
+//Figures out which version the current page is on
+function getGameVersionFromUrl() {
+  if(!WEB_VERSION) {
+    throw new Error('This function should only be used on the web version');
+  }
+
+  let thisUrl = window.location.href;
+  if(thisUrl.includes('old')) {
+    return parseInt(thisUrl.match(/old\/(\d+)/)[1]);
+  } else {
+    return webLatestVersion;
+  }
+}
+
+function redirectToSpecificGameVersion(gameVersion) {
+  let extra = '';
+  if(gameVersion !== webLatestVersion) {
+    extra = 'old/' + gameVersion + '/';
+  }
+  window.location.href = WEB_BASE_URL + extra;
+  console.log('Redirecting to ' + gameVersion);
 }
 
 window.testMod = {};
