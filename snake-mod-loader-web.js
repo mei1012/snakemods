@@ -1169,7 +1169,7 @@ function getGameVersionFromUrl() {
 
   let thisUrl = window.location.href;
   if(thisUrl.includes('old')) {
-    return parseInt(thisUrl.match(/site\/old\/(\d+)/)[1]);
+    return parseInt(thisUrl.match(site\/old\/(\d+)/)[1]);
   } else {
     return webLatestVersion;
   }
