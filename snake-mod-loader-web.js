@@ -455,7 +455,7 @@ let addModSelectorPopup = function() {
   if(WEB_VERSION) {
     gameVersion = `
     <div style="margin-top: 5px;">
-      <label for="mod-game-version">Game Version:</label>
+      <label for="mod-game-version" style="color:var(--mod-loader-font-col)">Game Version:</label>
       <select name="mod-game-version" id="mod-game-version">
         <option value="wait">loading...</option>
       </select>
