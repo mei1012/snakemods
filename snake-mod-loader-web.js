@@ -379,7 +379,12 @@ let addModSelectorPopup = function() {
 
   document.getElementsByTagName('style')[0].innerHTML = document.getElementsByTagName('style')[0].innerHTML + css;
 
-  const modCornerIndicatorHTML = `
+  let mobileCloseButton = '';
+  if(window.isSnakeMobileVersion) {
+    mobileCloseButton = '<div id="mod-indicator-mobile-close" style="position: absolute;bottom: 100%;right: 0px;text-align: center;background-color: var(--mod-loader-main-bg);height: 30px;width: 30px;font-size: 1.5em;border-top: 1px solid var(--mod-loader-thin-border);border-left: 1px solid var(--mod-loader-thin-border);border-top-left-radius: 5px;user-select: none;cursor: pointer;">×</div>';
+  }
+
+  const modCornerIndicatorHTML = `${mobileCloseButton}
       <span style="color:var(--mod-loader-font-col) !important">Current mod: </span><span id="mod-name-span" style="background-color: var(--mod-loader-indicator-display-bg);padding: 2px;border-radius: 3px;font-family: consolas, monospace; color:var(--mod-loader-font-col) !important"></span>
       <div id="change-mod-button" style="text-align: center;font-size: 0.84em;font-family: arial, sans-serif;color: var(--mod-loader-link-font-col);text-decoration: underline;cursor: pointer;margin-top: 3px;">Change mod</div>
       <div id="snake-error-message" style="font-family: helvetica, sans-serif;color: #f44336;margin-top: 2px;display: ${window.showSnakeErrMessage ? 'block' : 'none'};">
@@ -408,6 +413,12 @@ let addModSelectorPopup = function() {
   document.getElementById('change-mod-button').addEventListener('click', ()=>{
     document.getElementById('mod-selector-dialogue-container').style.display = document.getElementById('mod-selector-dialogue-container').style.display === 'none' ? 'block' : 'none';
   });
+
+  if(window.isSnakeMobileVersion) {
+    document.getElementById('mod-indicator-mobile-close').addEventListener('click', ()=>{
+      document.getElementById('mod-indicator').style.display = 'none';
+    });
+  }
 
   //Load the external modloader configuration (contains info about each of the different mods)
   externalConfig.load();
