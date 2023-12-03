@@ -3,7 +3,6 @@ let VERSION = '1.1.0';//Gets set to version in build script
 const UPDATE_URL = 'https://github.com/DarkSnakeGang/GoogleSnakeModLoader/raw/main/build/snake-mod-loader-fbx.user.js';//Gets set from build script
 const WEB_VERSION = true;//web snake
 const IS_FBX_OR_WEB = WEB_VERSION || window.location.href.includes('fbx?fbx=snake_arcade');
-const WEB_BASE_URL = new URL(window.location.href).origin + '/'; //Whatever goes at the start of the url, for example it could be this https://darksnakegang.github.io/site/';
 
 //web snake
 if(localStorage.getItem('snakeForceDevMode')) {
@@ -1168,19 +1167,20 @@ function getGameVersionFromUrl() {
   }
 
   let thisUrl = window.location.href;
-  if(thisUrl.includes('old')) {
-    return parseInt(thisUrl.match(/old\/(\d+)/)[1]);
+
+  if(thisUrl.includes('v/current')) {
+    return webLatestVersion
   } else {
-    return webLatestVersion;
+    return parseInt(thisUrl.match(/v\/(\d+)/)[1]);
   }
 }
 
 function redirectToSpecificGameVersion(gameVersion) {
-  let extra = '';
-  if(gameVersion !== webLatestVersion) {
-    extra = 'old/' + gameVersion + '/';
+  if(gameVersion === webLatestVersion) {
+    window.location.href = '../../v/current/';
+  } else {
+    window.location.href = `../../v/${gameVersion}`;
   }
-  window.location.href = WEB_BASE_URL + extra;
   console.log('Redirecting to ' + gameVersion);
 }
 
