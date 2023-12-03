@@ -42,6 +42,24 @@ if(WEB_VERSION) {
     //This is useful if the xyz part isn't a proper url, as otherwise we get stuck in a loop of setting a bad mod
     window.history.replaceState({}, document.title, newPath);
   }
+
+  //Change site to the mobile version if that setting is on.
+  //This code is here instead of with the other settings since it needs to run very early, before any other snake code has had a chance to run
+  let advancedSettings = JSON.parse(localStorage.getItem('snakeAdvancedSettings')) ?? {};
+  let useMobileWebsite = advancedSettings.useMobileWebsite ?? 'detect';
+  
+  //Lots of ways to detect mobile and not clear how to do it reliably. We could potentially use screen size.
+  //Detecting just "mobile" is conservative with showing mobile as some tablets will still show desktop site. This might be ok.
+  let mobileDetected = /Mobile/i.test(navigator.userAgent) //https://developers.google.com/search/blog/2011/03/mo-better-to-also-detect-mobile-user
+  //let mobileDetected = /Mobile|iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); //https://dev.to/timhuang/a-simple-way-to-detect-if-browser-is-on-a-mobile-device-with-javascript-44j3
+
+  //Publicly expose that it is mobile for mods to refer to
+  window.isSnakeMobileVersion = useMobileWebsite === 'yes' || (useMobileWebsite === 'detect' && mobileDetected);
+
+  //Apply changes for mobile site
+  if(window.isSnakeMobileVersion) {
+    switchToMobile();
+  }
 }
 
 //External config that determines which mods the modloader has
@@ -450,6 +468,17 @@ let addModSelectorPopup = function() {
                         <label style="color:var(--mod-loader-font-col) !important"><input id="custom-url" type="text"> Custom Mod Url</label><br>`;
   }
 
+  let mobileOption = '';
+  if(WEB_VERSION) {
+    mobileOption = `<label style="color:var(--mod-loader-font-col) !important" for="use-mobile-website">Use mobile website</label>
+      <select name="use-mobile-website" id="use-mobile-website">
+        <option value="detect">detect</option>
+        <option value="no">no</option>
+        <option value="yes">yes</option>
+      </select><br>
+    `;
+  }
+
   let gameVersion = '';
   if(WEB_VERSION) {
     gameVersion = `
@@ -490,6 +519,7 @@ let addModSelectorPopup = function() {
           <label style="color:var(--mod-loader-font-col) !important"><input id="hide-indicator" type="checkbox">Auto-hide mod indicator (h to toggle)</label><br>
           <!--<label style="color:var(--mod-loader-font-col) !important"><input id="hidden-mod-toggle" type="checkbox">Show early access mods</label><br>-->
           <label style="color:var(--mod-loader-font-col) !important"><input id="dark-mod-theme" type="checkbox">Dark mod loader theme</label><br>
+          ${mobileOption}
           <span><img src="https://github.com/DarkSnakeGang/GoogleSnakeIcons/blob/main/Extras/Discord.png?raw=true" width="16px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"><a target="_blank" href="https://discord.gg/NA6vHg62An" style="color:var(--mod-loader-link-font-col)">Discord</a></span><br>
           ${customUrlOptions}
         </div>
@@ -672,6 +702,11 @@ let addModSelectorPopup = function() {
   document.getElementById('dark-mod-theme').addEventListener('change', function() {
     updateAdvancedSetting('darkModTheme', this.checked);
   });
+  if(WEB_VERSION) {
+    document.getElementById('use-mobile-website').addEventListener('change', function() {
+      updateAdvancedSetting('useMobileWebsite', this.value);
+    })
+  }
 
   if(IS_DEVELOPER_MODE) {
     document.getElementById('custom-mod-name').addEventListener('input', function() {
@@ -743,7 +778,8 @@ let addModSelectorPopup = function() {
     } else if(
         newlySelectedMod !== currentlySelectedMod || 
         (advancedSettings.hasOwnProperty('customModName') && advancedSettings.customModName !== advancedSettingsOriginal.customModName) ||
-        (advancedSettings.hasOwnProperty('customUrl') && advancedSettings.customUrl !== advancedSettingsOriginal.customUrl)
+        (advancedSettings.hasOwnProperty('customUrl') && advancedSettings.customUrl !== advancedSettingsOriginal.customUrl) ||
+        (WEB_VERSION && advancedSettings.hasOwnProperty('useMobileWebsite') && advancedSettings.useMobileWebsite !== advancedSettingsOriginal.useMobileWebsite)
       ) {
       location.reload();
     } else {
@@ -825,6 +861,9 @@ let addModSelectorPopup = function() {
     }
     if(advancedSettings.hasOwnProperty('darkModTheme')) {
       document.getElementById('dark-mod-theme').checked = advancedSettings.darkModTheme;
+    }
+    if(WEB_VERSION && advancedSettings.hasOwnProperty('useMobileWebsite')) {
+      document.getElementById('use-mobile-website').value = advancedSettings.useMobileWebsite;
     }
     if(advancedSettings.hasOwnProperty('hideIndicator')) {
       document.getElementById('hide-indicator').checked = advancedSettings.hideIndicator;

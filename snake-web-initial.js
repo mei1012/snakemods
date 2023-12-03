@@ -68,3 +68,85 @@ function makeUrlAbsolute(url) {
   }
   return url;
 }
+
+function switchToMobile() {
+  //Add is-mobile data attribute
+  let snakeContainer = document.getElementsByClassName('EjCLSb')[0];
+  snakeContainer.dataset.isMobile = '';
+
+  //Add responsive meta tag
+  let responsiveMeta = document.createElement('meta');
+  responsiveMeta.name = 'viewport';
+  responsiveMeta.content = 'width=device-width,initial-scale=1.0,minimum-scale=1.0';
+  document.head.appendChild(responsiveMeta);
+
+  //Delete fullscreen button
+  document.querySelector('img[src$="fullscreen_white_24dp.png"]').remove();
+
+  //Add styles needed for mobile
+  let css = `
+  
+  /*Flexible size for snake container*/
+  .EjCLSb {
+    height: 100% !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  /*Don't centre the snake container*/
+  .yZz3de {
+    position: static !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+
+  /*Change keys image to swipe image*/
+  .rNjvu {
+    background-image: url(//www.google.com/logos/fnbx/snake_arcade/swipe.svg) !important
+  }
+
+  /*Menu modal panels don't overlap edge*/
+  .T7SB3d {
+    width: calc(100% - 64px) !important;
+    max-width: 300px !important;
+  }
+
+  /*Buttons below menu modal dont overlap edge*/
+  .wUt0xf {
+    width: calc(100% - 64px);
+  }
+
+  /*Current/highscore on menu modal taking up less space*/
+  @media only screen and (max-width: 315px),only screen and (orientation:landscape) and (max-height:315px) {
+    .bF4Gmf {
+        margin-left:5%;
+        margin-right: 5%
+    }
+  }
+
+  /*Current/highscore on menu modal taking up less space*/
+  @media only screen and (max-width: 215px),only screen and (orientation:landscape) and (max-height:215px) {
+      .bF4Gmf {
+          margin-left:0%;
+          margin-right: 0%
+      }
+  }
+
+  /*score on top bar less wide*/
+  .HIonyd {
+    width: 45px !important;
+  }
+
+  /*score on top bar less wide responsively*/
+  @media only screen and (max-width: 285px), only screen and (orientation: landscape) and (max-height: 285px)
+  .HIonyd {
+      width: 35px !important;
+      padding-left: 0 !important;
+  }
+  `;
+
+  let styleElement = document.querySelector('style');
+  styleElement.innerHTML = styleElement.innerHTML + css;
+}
