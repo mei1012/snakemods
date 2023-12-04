@@ -115,10 +115,6 @@ let externalConfig = {
           }
         ],
         description: 'For mod developers only. Edit window.testMod in the userscript code.'
-      },
-      mobile: {
-        support: true,
-        description: "N/A"
       }
     };
 
@@ -135,10 +131,6 @@ let externalConfig = {
           }
         ],
         description: 'For mod developers only. Enter details of a mod in the advanced options.'
-      },
-      mobile: {
-        support: true,
-        description: "N/A"
       }
     }
   }
@@ -236,7 +228,14 @@ document.body.appendChild = function(el) {
       localStorage.setItem('snakeChosenMod', 'none');
       if(confirm('Disallowed choice of mod. Changing this to none. Refresh the page?')) {location.reload();}
       throw new Error(errMessage);
-    } 
+    }
+
+    if(window.isSnakeMobileVersion && modsConfig[currentlySelectedMod].mobile && modsConfig[currentlySelectedMod].mobile.support === false) {
+      const errMessage = `This value snakeChosenMod does not support mobile: ${currentlySelectedMod}. Changing this to the "None" setting for next time.`;
+      localStorage.setItem('snakeChosenMod', 'none');
+      if(confirm(`Chosen mod (${currentlySelectedMod}) does not work on mobile. Changing this to none. Refresh the page?`)) {location.reload();}
+      throw new Error(errMessage);
+    }
 
     //Here we request the code for a particular mod
     if(!modsConfig[currentlySelectedMod].hasUrl) {
@@ -540,6 +539,11 @@ let addModSelectorPopup = function() {
   let modSelectorRadioOptions = '';
   let modDescriptions = '';
   for(const [key, value] of Object.entries(modsConfig)) {
+    if(window.isSnakeMobileVersion && value.mobile && value.mobile.support === false) {
+      //If we are on mobile then hide mods which don't support mobile
+      continue;
+    }
+
     let optionalHiddenClass = value.startHidden ? 'class="start-hidden"' : '';
     modSelectorRadioOptions += `<label ${optionalHiddenClass} style="color:var(--mod-loader-font-col) !important"><input type="radio" name="mod-selector" value="${key}">${value.displayName}<br></label>`;
 
