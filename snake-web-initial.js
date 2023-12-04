@@ -115,22 +115,23 @@ function switchToMobile() {
 
   /*Buttons below menu modal dont overlap edge*/
   .wUt0xf {
-    width: calc(100% - 64px);
+    width: calc(100% - 64px) !important;
+    max-width: 300px !important;
   }
 
   /*Current/highscore on menu modal taking up less space*/
   @media only screen and (max-width: 315px),only screen and (orientation:landscape) and (max-height:315px) {
     .bF4Gmf {
-        margin-left:5%;
-        margin-right: 5%
+        margin-left:5% !important;
+        margin-right: 5% !important;
     }
   }
 
   /*Current/highscore on menu modal taking up less space*/
   @media only screen and (max-width: 215px),only screen and (orientation:landscape) and (max-height:215px) {
       .bF4Gmf {
-          margin-left:0%;
-          margin-right: 0%
+          margin-left:0% !important;
+          margin-right: 0% !important;
       }
   }
 
