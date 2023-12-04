@@ -115,6 +115,10 @@ let externalConfig = {
           }
         ],
         description: 'For mod developers only. Edit window.testMod in the userscript code.'
+      },
+      mobile: {
+        support: true,
+        description: "N/A"
       }
     };
 
@@ -131,6 +135,10 @@ let externalConfig = {
           }
         ],
         description: 'For mod developers only. Enter details of a mod in the advanced options.'
+      },
+      mobile: {
+        support: true,
+        description: "N/A"
       }
     }
   }
@@ -552,12 +560,19 @@ let addModSelectorPopup = function() {
         authorString = 'Author: N/A';
       }
 
+      mobileSupport = '';
+      if(window.isSnakeMobileVersion && value.mobile) {
+        mobileSupport = `<br>
+        <span style="font-weight: bold;color:var(--mod-loader-font-col) !important">Mobile Support: </span>${value.mobile.description}`
+      }
+
       //Create html for description section
       modDescriptions += `
         <div data-linked-option="${key}" class="mod-description" style="display:none">
           <span style="font-weight: bold;color:var(--mod-loader-font-col) !important">${value.modDescription.descriptionName}</span><br>
           <span style="font-weight: bold;color:var(--mod-loader-font-col) !important">${authorString}</span><br>
           <span style="color:var(--mod-loader-font-col) !important">${value.modDescription.description}</span>
+          ${mobileSupport}
         </div>
       `;
     }
