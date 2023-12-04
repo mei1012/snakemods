@@ -350,6 +350,7 @@ let addModSelectorPopup = function() {
     --mod-loader-button-apply-col: #4caf50;
     --mod-loader-button-settings-col: #4c7caf;
     --mod-loader-button-hover: #fefcfb;
+    --mod-loader-desc-mobile-bg: #e9e5c3;
   }
 
   /*dark theme*/
@@ -366,6 +367,7 @@ let addModSelectorPopup = function() {
     --mod-loader-button-apply-col: #5cf062;
     --mod-loader-button-settings-col: #5ba0f0;
     --mod-loader-button-hover: #666666;
+    --mod-loader-desc-mobile-bg: #3a393c;
   }
 
   .start-hidden {
@@ -374,6 +376,95 @@ let addModSelectorPopup = function() {
 
   .start-hidden.show-hidden {
     display: block;
+  }
+
+  /*hiding/showing advanced settings*/
+  #mod-selector-dialogue #advanced-options {
+    display: none;
+  }
+
+  #mod-selector-dialogue.show-settings-page #advanced-options {
+    display: block;
+  }
+  /*end of hiding/showing advanced settings*?
+
+  /*text on show settings button*/
+  #mod-selector-dialogue.show-settings-page #advanced-options-show-settings-text {
+    display:none
+  }
+
+  #mod-selector-dialogue #advanced-options-show-settings-text {
+    display:inline
+  }
+
+  #mod-selector-dialogue.show-settings-page #advanced-options-hide-settings-text {
+    display:inline
+  }
+
+  #mod-selector-dialogue #advanced-options-hide-settings-text {
+    display:none
+  }
+
+  #mod-selector-dialogue #advanced-options-show-mods-text {
+    display:none
+  }
+  /*end of text on show settings button*/
+
+  /*responsive stuff*/
+  @media (max-width: 450px) {
+    /*hide version number at bottom of modloader*/
+    #version-info {
+      display: none;
+    }
+
+    /*Less space above modloader*/
+    #mod-selector-dialogue {
+      margin: 7px auto !important;
+    }
+
+    /*Vertical layout for mods panel*/
+    #mod-selector-dialogue #main-panel {
+      display: block !important;
+    }
+
+    /*Small screen setup for pagination between mods menu and advanced options menu*/
+    #mod-selector-dialogue.show-settings-page #main-panel {
+      display: none !important;
+    }
+
+    #mod-selector-dialogue.show-settings-page #mod-game-verson-div {
+      display: none;
+    }
+
+    #advanced-options-divider {
+      display: none;
+    }
+
+    #advanced-settings {
+      display: block !important
+    }
+
+    .mod-description {
+      background-color: var(--mod-loader-desc-mobile-bg);
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    /*Small should say "Show mods" instead of "Hide settings" for toggling between the different menus*/
+    #mod-selector-dialogue.show-settings-page #advanced-options-hide-settings-text {
+      display:none
+    }
+
+    #mod-selector-dialogue.show-settings-page #advanced-options-show-mods-text {
+      display:inline
+    }
+  }
+
+  /*title takes up less space on very thin screens*/
+  @media (max-width: 350px) {
+    #mod-loader-title > span {
+      display: none;
+    }
   }
   `;
 
@@ -493,7 +584,7 @@ let addModSelectorPopup = function() {
   let gameVersion = '';
   if(WEB_VERSION) {
     gameVersion = `
-    <div style="margin-top: 5px;">
+    <div id="mod-game-verson-div" style="margin-top: 5px;">
       <label for="mod-game-version" style="color:var(--mod-loader-font-col)">Game Version:</label>
       <select name="mod-game-version" id="mod-game-version">
         <option value="wait">loading...</option>
@@ -504,8 +595,8 @@ let addModSelectorPopup = function() {
   }
 
   const modSelectorModal = `
-  <div id="mod-selector-dialogue" style="display: block;margin:25px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;">
-    <div style="display: flex;justify-content: space-between;align-items: center;margin: 0px 0px 15px 0px;border: 2px solid var(--mod-loader-title-border);background-color: var(--mod-loader-title-bg);border-radius: 2px;">
+  <div id="mod-selector-dialogue" style="display: block;margin:25px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;max-width: calc(100vw - 35px);overflow-y: auto;max-height: calc(100vh - 110px);">
+    <div id="mod-loader-title" style="display: flex;justify-content: space-between;align-items: center;margin: 0px 0px 15px 0px;border: 2px solid var(--mod-loader-title-border);background-color: var(--mod-loader-title-bg);border-radius: 2px;">
       <span><a target="_blank" href="https://github.com/DarkSnakeGang"><img title="DarkSnakeGang github" style="margin-left:3px; margin-top:2px" src="https://www.google.com/logos/fnbx/snake_arcade/v3/speed_00.png" alt="" height="34"></a></span>
       <h1 style="font-size: 2em;font-weight: bold;font-family: &quot;Century Gothic&quot;, sans-serif;text-align: center;color: #4674e9;margin-top: 0;margin-bottom: 0;">Snake Mod Loader</h1>
       <span><a target="_blank" href="https://discord.gg/NA6vHg62An"><img title="Discord server" src="https://github.com/DarkSnakeGang/GoogleSnakeIcons/blob/main/Extras/Discord.png?raw=true" width="35px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"></a></span>
@@ -520,8 +611,8 @@ let addModSelectorPopup = function() {
     </div>
     ${gameVersion}
 
-    <div id="advanced-options" style="display:none">
-      <hr style="margin-block-start: 0.5em; margin-block-end: 0.5em;">
+    <div id="advanced-options">
+      <hr id="advanced-options-divider" style="margin-block-start: 0.5em; margin-block-end: 0.5em;">
       <div id="advanced-settings" style="display: flex;justify-content: space-between;">
         <div id="settings-wrapper-1">
           <label style="color:var(--mod-loader-font-col) !important"><input id="fullscreen-at-start" type="checkbox">Fullscreen at start</label><br>
@@ -555,7 +646,9 @@ let addModSelectorPopup = function() {
         Advanced options
       </div>-->
       <div id="advanced-options-toggle" class="mod-sel-btn" style="display:inline-block;background-color: var(--mod-loader-button-bg);padding: 4px;margin-top: 7px;border-radius: 3px;border: 2px solid var(--mod-loader-button-settings-col);color: var(--mod-loader-button-settings-col);font-weight: bold;user-select: none;cursor: pointer;">
-        Show settings
+        <span id="advanced-options-show-settings-text">Show settings</span>
+        <span id="advanced-options-hide-settings-text">Hide settings</span>
+        <span id="advanced-options-show-mods-text">Show mods</span>
       </div>
       <div id="version-info" style="color:var(--mod-loader-font-col) !important;padding-top: 15px;">
         Version ${VERSION} 
@@ -662,9 +755,8 @@ let addModSelectorPopup = function() {
 
   //Event listeners for advanced settings
   document.getElementById('advanced-options-toggle').addEventListener('click', (event)=>{
-    let shouldShow = document.getElementById('advanced-options').style.display === 'none';
-    document.getElementById('advanced-options').style.display = shouldShow ? 'block':'none';
-    document.getElementById('advanced-options-toggle').textContent = shouldShow ? 'Hide settings' : 'Show settings';
+    let modSelectorEl = document.getElementById('mod-selector-dialogue');
+    modSelectorEl.classList.toggle('show-settings-page');
     event.preventDefault();
   });
   document.getElementById('use-custom-theme').addEventListener('change', function() {
