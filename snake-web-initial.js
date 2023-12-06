@@ -74,12 +74,6 @@ function switchToMobile() {
   let snakeContainer = document.getElementsByClassName('EjCLSb')[0];
   snakeContainer.dataset.isMobile = '';
 
-  //Add responsive meta tag
-  let responsiveMeta = document.createElement('meta');
-  responsiveMeta.name = 'viewport';
-  responsiveMeta.content = 'width=device-width,initial-scale=1.0,minimum-scale=1.0';
-  document.head.appendChild(responsiveMeta);
-
   //Delete fullscreen button
   document.querySelector('img[src$="fullscreen_white_24dp.png"]').remove();
 
