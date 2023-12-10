@@ -479,7 +479,7 @@ let addModSelectorPopup = function() {
 
   let mobileCloseButton = '';
   if(window.isSnakeMobileVersion) {
-    mobileCloseButton = '<div id="mod-indicator-mobile-close" style="position: absolute;bottom: 100%;right: 0px;text-align: center;background-color: var(--mod-loader-main-bg);height: 30px;width: 30px;font-size: 1.5em;border-top: 1px solid var(--mod-loader-thin-border);border-left: 1px solid var(--mod-loader-thin-border);border-top-left-radius: 5px;user-select: none;cursor: pointer;">×</div>';
+    mobileCloseButton = '<div id="mod-indicator-mobile-close" style="color:var(--mod-loader-font-col); position: absolute;bottom: 100%;right: 0px;text-align: center;background-color: var(--mod-loader-main-bg);height: 30px;width: 30px;font-size: 1.5em;border-top: 1px solid var(--mod-loader-thin-border);border-left: 1px solid var(--mod-loader-thin-border);border-top-left-radius: 5px;user-select: none;cursor: pointer;">×</div>';
   }
 
   const modCornerIndicatorHTML = `${mobileCloseButton}
@@ -1048,7 +1048,11 @@ let addModSelectorPopup = function() {
       setTimeout(applyAdvancedSnakeSettingsToGame, 300);
     } else {
       if(advancedSettings.timerStartsOn) {
-        window.snake.speedrun();
+        if(window.isSnakeMobileVersion) {
+          console.log('Skipping turning timer on due to being on mobile version.');
+        } else {
+          window.snake.speedrun();
+        }
       }
       if(advancedSettings.useCustomTheme) {
         window.snake.setCustomTheme(
