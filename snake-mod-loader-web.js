@@ -567,7 +567,7 @@ let addModSelectorPopup = function() {
       mobileSupport = '';
       if(window.isSnakeMobileVersion && value.mobile) {
         mobileSupport = `<br>
-        <span style="font-weight: bold;color:var(--mod-loader-font-col) !important">Mobile Support: </span>${value.mobile.description}`
+        <span style="font-weight: bold;color:var(--mod-loader-font-col) !important">Mobile Support: </span><span style="color:var(--mod-loader-font-col) !important">${value.mobile.description}</span>`
       }
 
       //Create html for description section
