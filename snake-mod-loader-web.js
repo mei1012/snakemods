@@ -482,23 +482,33 @@ let addModSelectorPopup = function() {
     mobileCloseButton = '<div id="mod-indicator-mobile-close" style="color:var(--mod-loader-font-col); position: absolute;bottom: 100%;right: 0px;text-align: center;background-color: var(--mod-loader-main-bg);height: 30px;width: 30px;font-size: 1.5em;border-top: 1px solid var(--mod-loader-thin-border);border-left: 1px solid var(--mod-loader-thin-border);border-top-left-radius: 5px;user-select: none;cursor: pointer;">×</div>';
   }
 
+  let googlesnakemodscomHref = 'https://googlesnakemods.com/v/current/';
+  let storedMod = localStorage.getItem('snakeChosenMod');
+
+  if(typeof storedMod === 'string' && /^[a-z0-9 ._]*$/i.test(storedMod)) {
+    googlesnakemodscomHref += 'index.html?mod=' + storedMod;
+  }
+
+  let googlesnakemodscomLinkHtml = '';
+
+  if(!WEB_VERSION) {
+    googlesnakemodscomLinkHtml = `<br><a href="${googlesnakemodscomHref}" target="_blank" style="color: var(--mod-loader-link-font-col);">Try googlesnakemods.com instead</a>`;
+  }
+
   const modCornerIndicatorHTML = `${mobileCloseButton}
       <span style="color:var(--mod-loader-font-col) !important">Current mod: </span><span id="mod-name-span" style="background-color: var(--mod-loader-indicator-display-bg);padding: 2px;border-radius: 3px;font-family: consolas, monospace; color:var(--mod-loader-font-col) !important"></span>
       <div id="change-mod-button" style="text-align: center;font-size: 0.84em;font-family: arial, sans-serif;color: var(--mod-loader-link-font-col);text-decoration: underline;cursor: pointer;margin-top: 3px;">Change mod</div>
       <div id="snake-error-message" style="font-family: helvetica, sans-serif;color: #f44336;margin-top: 2px;display: ${window.showSnakeErrMessage ? 'block' : 'none'};">
-        Error changing snake code.
-        <br>
-        <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/mod_errors.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Why does this happen?</a>
+        Error changing snake code. <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/mod_errors.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Explanation</a>
+        ${googlesnakemodscomLinkHtml}
       </div>
       <div id="code-not-found-message" style="font-family: helvetica, sans-serif;color: #f44336;margin-top: 2px;display: none;">
-        Code not found after 4 seconds.
-        <br>
-        <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/code_not_found_yet.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Is it not working?</a>
+        Code not found after 4 seconds. <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/code_not_found_yet.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Explanation</a>
+        ${googlesnakemodscomLinkHtml}
       </div>
       <div id="config-not-loaded-message" style="font-family: helvetica, sans-serif;color: #f44336;margin-top: 2px;display: none;">
-        Error: Failed to load external configuration.
-        <br>
-        <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/config_not_loaded.md" target="_blank" style="color: var(--mod-loader-link-font-col);">What does this mean?</a>
+        Error: Failed to load external configuration. <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/config_not_loaded.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Explanation</a>
+        ${googlesnakemodscomLinkHtml}
       </div>
   `;
 
@@ -618,7 +628,7 @@ let addModSelectorPopup = function() {
     <div id="mod-loader-title" style="display: flex;justify-content: space-between;align-items: center;margin: 0px 0px 15px 0px;border: 2px solid var(--mod-loader-title-border);background-color: var(--mod-loader-title-bg);border-radius: 2px;">
       <span><a target="_blank" href="https://github.com/DarkSnakeGang"><img title="DarkSnakeGang github" style="margin-left:3px; margin-top:2px" src="https://www.google.com/logos/fnbx/snake_arcade/v3/speed_00.png" alt="" height="34"></a></span>
       <h1 style="font-size: 2em;font-weight: bold;font-family: &quot;Century Gothic&quot;, sans-serif;text-align: center;color: #4674e9;margin-top: 0;margin-bottom: 0;">Snake Mod Loader</h1>
-      <span><a target="_blank" href="https://discord.gg/NA6vHg62An"><img title="Discord server" src="https://github.com/DarkSnakeGang/GoogleSnakeIcons/blob/main/Extras/Discord.png?raw=true" width="35px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"></a></span>
+      <span><a target="_blank" href="https://discord.gg/NA6vHg62An"><img title="Discord server" src="https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeIcons/main/Extras/Discord.png" width="35px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"></a></span>
     </div>
     <div id="main-panel" style="display: flex;justify-content: start;">
       <div id="mod-options" style="flex: 45%;min-height: 115px;">
@@ -641,7 +651,7 @@ let addModSelectorPopup = function() {
           <!--<label style="color:var(--mod-loader-font-col) !important"><input id="hidden-mod-toggle" type="checkbox">Show early access mods</label><br>-->
           <label style="color:var(--mod-loader-font-col) !important"><input id="dark-mod-theme" type="checkbox">Dark mod loader theme</label><br>
           ${mobileOption}
-          <span><img src="https://github.com/DarkSnakeGang/GoogleSnakeIcons/blob/main/Extras/Discord.png?raw=true" width="16px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"><a target="_blank" href="https://discord.gg/NA6vHg62An" style="color:var(--mod-loader-link-font-col)">Discord</a></span><br>
+          <span><img src="https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeIcons/main/Extras/Discord.png" width="16px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"><a target="_blank" href="https://discord.gg/NA6vHg62An" style="color:var(--mod-loader-link-font-col)">Discord</a></span><br>
           ${customUrlOptions}
         </div>
         <div id="settings-wrapper-2">
@@ -699,7 +709,7 @@ let addModSelectorPopup = function() {
 
   let hideEndScreenImg = document.createElement('img');
   hideEndScreenImg.style = "position: absolute;left: 10px;top: 10px;cursor: pointer; height:20px; width:auto;";
-  hideEndScreenImg.src = "https://github.com/DarkSnakeGang/GoogleSnakeIcons/blob/main/ToggleDeathscreen/EyeIcon.png?raw=true";
+  hideEndScreenImg.src = "https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeIcons/main/ToggleDeathscreen/EyeIcon.png";
   hideEndScreenImg.title = "Click to hide. Click anywhere to bring back";
   hideEndScreenImg.id = "death-screen-toggle";
   let firstMenuScreen = document.getElementsByClassName('T7SB3d')[0];
