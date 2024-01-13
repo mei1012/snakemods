@@ -86,3 +86,34 @@ p {
   box-shadow: #3c4fe0 0 3px 7px inset;
   transform: translateY(2px);
 }
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #555555;
+  padding: 10px;
+  border-radius: 5px;
+  right: 0;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid white;
+}
+
+.thin-dropdown {
+  display: none;
+  position: relative;
+}
+
+@media screen and (max-width: 550px) {
+  .thin-dropdown {
+    display: block;
+  }
+
+  .wide-only {
+    display:none;
+  }
+}
+
+.thin-dropdown:hover .dropdown-content {
+  display: flex;
+}
