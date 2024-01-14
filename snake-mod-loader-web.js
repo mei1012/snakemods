@@ -623,6 +623,30 @@ let addModSelectorPopup = function() {
     `;
   }
 
+  let gsmLink = '';
+  if(!WEB_VERSION) {
+    gsmLink = `<span><a target="_blank" href="https://googlesnakemods.com" style="color:var(--mod-loader-link-font-col)">googlesnakemods.com</a></span><br>`
+  }
+
+  let gsmPromo = '';
+  if(!WEB_VERSION && !localStorage.getItem('snakeGsmPromoDismissed')) {
+    gsmPromo = `
+    <div id="gsm-message" style="background-color: #c7ebff;border-radius: 2px;border: 2px solid hsl(201 100% 77% / 1);padding:2px;margin:2px;font-size: 15px;">
+      We now have <a target="_blank" href="https://googlesnakemods.com" style="color:var(--mod-loader-link-font-col)">googlesnakemods.com</a> for playing mods without tampermonkey.<br>
+      <div style="display:flex;justify-content: space-between;padding-inline: 40px;">
+        <div id="gsm-visit">
+          <a target="_blank" href="https://googlesnakemods.com" style="color: var(--mod-loader-link-font-col);">
+            Visit
+          </a>
+        </div>
+        <div id="gsm-dismiss" style="color: var(--mod-loader-link-font-col);text-decoration: underline;cursor: pointer;">
+          Dismiss forever
+        </div>
+      </div>
+    </div>
+    `;
+  }
+
   const modSelectorModal = `
   <div id="mod-selector-dialogue" style="display: block;margin:25px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;max-width: calc(100vw - 35px);overflow-y: auto;max-height: calc(100vh - 110px);">
     <div id="mod-loader-title" style="display: flex;justify-content: space-between;align-items: center;margin: 0px 0px 15px 0px;border: 2px solid var(--mod-loader-title-border);background-color: var(--mod-loader-title-bg);border-radius: 2px;">
@@ -630,6 +654,7 @@ let addModSelectorPopup = function() {
       <h1 style="font-size: 2em;font-weight: bold;font-family: &quot;Century Gothic&quot;, sans-serif;text-align: center;color: #4674e9;margin-top: 0;margin-bottom: 0;">Snake Mod Loader</h1>
       <span><a target="_blank" href="https://discord.gg/NA6vHg62An"><img title="Discord server" src="https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeIcons/main/Extras/Discord.png" width="35px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"></a></span>
     </div>
+    ${gsmPromo}
     <div id="main-panel" style="display: flex;justify-content: start;">
       <div id="mod-options" style="flex: 45%;min-height: 115px;">
         ${modSelectorRadioOptions}
@@ -651,7 +676,7 @@ let addModSelectorPopup = function() {
           <!--<label style="color:var(--mod-loader-font-col) !important"><input id="hidden-mod-toggle" type="checkbox">Show early access mods</label><br>-->
           <label style="color:var(--mod-loader-font-col) !important"><input id="dark-mod-theme" type="checkbox">Dark mod loader theme</label><br>
           ${mobileOption}
-          <span><img src="https://raw.githubusercontent.com/DarkSnakeGang/GoogleSnakeIcons/main/Extras/Discord.png" width="16px" style="margin-left: 3px; margin-right: 5px; position: relative; top: 2px;"><a target="_blank" href="https://discord.gg/NA6vHg62An" style="color:var(--mod-loader-link-font-col)">Discord</a></span><br>
+          ${gsmLink}
           ${customUrlOptions}
         </div>
         <div id="settings-wrapper-2">
@@ -772,6 +797,16 @@ let addModSelectorPopup = function() {
 
   if(WEB_VERSION) {
     document.getElementById('mod-game-version').addEventListener('change',showSettingChanged);
+  }
+
+  if(!WEB_VERSION && !localStorage.getItem('snakeGsmPromoDismissed')) {
+    document.getElementById('gsm-dismiss').addEventListener('click',()=>{
+      if(confirm('Never show message again? Press OK to confirm or cancel to keep the message.')) {
+        localStorage.setItem('snakeGsmPromoDismissed', 'true');
+        document.getElementById('gsm-message').remove();
+        alert('Successfully dismissed. If you want to visit the standalone mods website in the future, the link can be found in the settings.');
+      }
+    });
   }
 
   //Load advanced settings
