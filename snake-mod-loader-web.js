@@ -1467,10 +1467,12 @@ window.findFunctionInCode = function(code, functionSignature, somethingInsideFun
   let functionSignatureSource = functionSignature.source;
   let functionSignatureFlags = functionSignature.flags;//Probably empty string
 
-  /*Check functionSignature ends in $*/
-  if (functionSignatureSource[functionSignatureSource.length - 1] !== "$") {
-    throw new Error("functionSignature regex should end in $");
+  if(!functionSignatureFlags.includes('g')) {
+    functionSignatureFlags += 'g';
   }
+
+  /*Remove any trailling $ signs from the end of the function signature (this is a legacy issue, I know it's bad)*/
+  functionSignatureSource = functionSignatureSource.replaceAll(/(?<!\\)\$/g, '');
 
   /*Allow line breaks after commas or =. This is bit sketchy, but should be ok as findFunctionInCode is used in a quite limited way*/
   functionSignatureSource.replaceAll(/,|=/g,'$&\\n?');
@@ -1483,19 +1485,16 @@ window.findFunctionInCode = function(code, functionSignature, somethingInsideFun
     diagnoseRegexError(code, somethingInsideFunction);
   }
 
-  /*expand outwards from somethingInsideFunction until we get to the function signature, then count brackets
+  /*Find the occurence of function signature closest to where we found somethingInsideFunction, then count brackets
   to find the end of the function*/
-  let startIndex = 0;
-  for (let i = indexWithinFunction; i >= 0; i--) {
-    let startOfCode = code.substring(0, i);
-    startIndex = startOfCode.search(functionSignature);
-    if (startIndex !== -1) {
-      break;
-    }
-    if (i == 0) {
-      throw new Error("Couldn't find function signature");
-    }
+  let codeBeforeMatch = code.substring(0, indexWithinFunction);
+  let signatureMatches = [...codeBeforeMatch.matchAll(functionSignature)];
+
+  if(signatureMatches.length === 0) {
+    throw new Error("Couldn't find function signature");
   }
+
+  let startIndex = signatureMatches[signatureMatches.length - 1].index;
 
   let bracketCount = 0;
   let foundFirstBracket = false;
@@ -1533,7 +1532,6 @@ window.findFunctionInCode = function(code, functionSignature, somethingInsideFun
   if (logging) {
     console.log(fullFunction);
   }
-
   return fullFunction;
 }
 
