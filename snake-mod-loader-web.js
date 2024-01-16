@@ -1472,7 +1472,7 @@ window.findFunctionInCode = function(code, functionSignature, somethingInsideFun
   }
 
   /*Remove any trailling $ signs from the end of the function signature (this is a legacy issue, I know it's bad)*/
-  functionSignatureSource = functionSignatureSource.replaceAll(/(?<!\\)\$/g, '');
+  functionSignatureSource = functionSignatureSource.replaceAll(/\$(?=\|)|\$$/g, '');
 
   /*Allow line breaks after commas or =. This is bit sketchy, but should be ok as findFunctionInCode is used in a quite limited way*/
   functionSignatureSource.replaceAll(/,|=/g,'$&\\n?');
