@@ -66,6 +66,7 @@ if(WEB_VERSION) {
 let externalConfig = {
   modInfo: null,
   hasError: false,
+  hasXhrSyncError: false, //Tracks the rare error where an extension converts sync xhr into async.
   load: function() {
     //Load the external JSON configuration file which contains info about the different mods and the modloader itself.
     if(this.modInfo !== null) {return;}//Already loaded - exit early
@@ -217,6 +218,11 @@ document.body.appendChild = function(el) {
     externalConfig.load();
     if(externalConfig.hasError) {
       returnVal = document.body.appendChildOld(el);
+      return;
+    }
+    if(!externalConfig.modInfo) {
+      //Error as xhr sync must be behaving like async (e.g. due to an extension)
+      externalConfig.hasXhrSyncError = true;
       return;
     }
     let modsConfig = externalConfig.modInfo.modsConfig;
@@ -510,6 +516,10 @@ let addModSelectorPopup = function() {
         Error: Failed to load external configuration. <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/config_not_loaded.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Explanation</a>
         ${googlesnakemodscomLinkHtml}
       </div>
+      <div id="xhr-sync-problem-message" style="font-family: helvetica, sans-serif;color: #f44336;margin-top: 2px;display: none;">
+        Error loading config, try disabling extensions <a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/xhr_sync_issue.md" target="_blank" style="color: var(--mod-loader-link-font-col);">Explanation</a>
+        ${googlesnakemodscomLinkHtml}
+      </div>
   `;
 
   let modIndicatorEl = document.createElement('div');
@@ -542,7 +552,20 @@ let addModSelectorPopup = function() {
 
     window.showSnakeErrMessage = true;//Used to prevent the indicator being auto-hidden
     modsConfig = {};
-  } else {
+  } else if(!externalConfig.modInfo || externalConfig.hasXhrSyncError) {
+    //Weird error with xhr behaving synchronously, show a warning (likely to be extensions interfering)
+    document.getElementById('xhr-sync-problem-message').style.display = 'block';
+    //Make sure that the indicator is actually visible
+    let modIndicatorEl = document.getElementById('mod-indicator');
+    if(modIndicatorEl) {
+      modIndicatorEl.style.display = 'block';
+    }
+
+    externalConfig.hasXhrSyncError = true;
+    window.showSnakeErrMessage = true;//Used to prevent the indicator being auto-hidden
+    modsConfig = {};
+  }else {
+    //Loaded correctly
     modsConfig = externalConfig.modInfo.modsConfig;
   }
 
