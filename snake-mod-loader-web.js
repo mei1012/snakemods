@@ -316,6 +316,7 @@ document.body.appendChild = function(el) {
         let snakeErrEl = document.getElementById('snake-error-message')
         if(snakeErrEl) {snakeErrEl.style.display = 'block';}
         window.showSnakeErrMessage = true;
+        showErrorTryGsmPopup(currentlySelectedMod);
         console.log('Displaying message to user and then running the google snake script and then throwing the original error that occurred in "alterSnakeCode"');
         (0,eval)(this.responseText);
         throw err;
@@ -361,7 +362,7 @@ let addModSelectorPopup = function() {
   }
 
   /*light theme*/
-  #mod-indicator, #mod-selector-dialogue-container, #start-message-dialogue-container {
+  #mod-indicator, #mod-selector-dialogue-container, #start-message-dialogue-container, #try-gsm-dialogue-container {
     --mod-loader-font-col: #000000;
     --mod-loader-main-bg: #fffce0;
     --mod-loader-title-bg: #ece9d4;
@@ -378,7 +379,7 @@ let addModSelectorPopup = function() {
   }
 
   /*dark theme*/
-  #mod-indicator.dark-mod-theme, #mod-selector-dialogue-container.dark-mod-theme, #start-message-dialogue-container.dark-mod-theme {
+  #mod-indicator.dark-mod-theme, #mod-selector-dialogue-container.dark-mod-theme, #start-message-dialogue-container.dark-mod-theme, #try-gsm-dialogue-container.dark-mod-theme {
     --mod-loader-font-col: #ffffff;
     --mod-loader-main-bg: #1F1F22;/*orig/second#343542;*/
     --mod-loader-title-bg: #34343a;/*second - #53556a;*//*orig - #66636f;*/
@@ -962,13 +963,6 @@ let addModSelectorPopup = function() {
     document.getElementById('mod-selector-dialogue-container').style.display = 'none';
   });
 
-  //Also hide when clicking backdrop
-  document.getElementById('mod-selector-dialogue-container').addEventListener('click',function(event){
-    if(this === event.target) {
-      this.style.display='none'
-    }
-  });
-
   //Apply button should save settings and refresh page
   document.getElementById('apply-mod').addEventListener('click', function(event) {
     //Figure out if advanced settings have been changed.
@@ -1377,7 +1371,7 @@ let addModSelectorPopup = function() {
     const moreInfo = `<p><a href="https://github.com/DarkSnakeGang/GoogleSnakeModLoader/blob/main/docs/${modInfo.startMessage.moreInfoLink}" target="_blank" style="color: var(--mod-loader-link-font-col);font-size:1.5em">More info here</a></p>`
 
     const startMessagePopup = `
-      <div id="start-message-dialogue" style="display: block;margin:40px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;text-align:center">
+      <div id="start-message-dialogue" style="display: block;margin:40px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;text-align:center;max-width: calc(100vw - 35px);overflow-y: auto;max-height: calc(100vh - 110px);">
         ${modInfo.startMessage.showUpdatePrompt ? updateAvailableHeading : messageHeading}
 
         <p id="start-message-explanatory-text" style="font-size:1.5em;color: var(--mod-loader-font-col);"></p>
@@ -1390,11 +1384,11 @@ let addModSelectorPopup = function() {
       </div>
       `;
 
-    //Insert html for custom preset export dialogue box.
+    //Insert html for start-message dialogue box.
     let startMessageModalContainer = document.createElement('div');
     startMessageModalContainer.innerHTML = startMessagePopup;
     startMessageModalContainer.id = 'start-message-dialogue-container';
-    startMessageModalContainer.style = 'position:fixed; width:100%; height:100%; z-index: 9999999; left:0; top:0';
+    startMessageModalContainer.style = 'position:fixed; width:100%; height:100%; z-index: 10000001; left:0; top:0';
     document.body.appendChild(startMessageModalContainer);
 
     document.getElementById('start-message-explanatory-text').textContent = modInfo.startMessage.explanatoryText;
@@ -1441,6 +1435,61 @@ let addModSelectorPopup = function() {
 
     window.showSnakeErrMessage = true;//Used to prevent the indicator being auto-hidden
   }
+}
+
+
+function showErrorTryGsmPopup() {
+  //Don't show anything if already on web snake
+
+  if(WEB_VERSION) {
+    return;
+  }
+
+  let googlesnakemodscomHref = 'https://googlesnakemods.com/v/current/';
+  let storedMod = localStorage.getItem('snakeChosenMod');
+
+  if(typeof storedMod === 'string' && /^[a-z0-9 ._]*$/i.test(storedMod)) {
+    googlesnakemodscomHref += 'index.html?mod=' + storedMod;
+  }
+
+  const tryGsmPopup = `
+  <div id="try-gsm-dialogue" style="display: block;margin:40px auto;padding:10px;border: 1px solid var(--mod-loader-thin-border);width:550px;background-color: var(--mod-loader-main-bg) !important;border-radius:5px;-webkit-box-shadow: 0px 0px 10px 1px rgba(0,0,0,0.24);box-shadow: 0px 0px 10px 1px rgb(0 0 0 / 20%);font-family: helvetica, sans-serif;text-align:center;max-width: calc(100vw - 35px);overflow-y: auto;max-height: calc(100vh - 110px);">
+    <h1 style="font-size: 2.2em;font-weight: bold;margin: 7px 0px 15px 0px;text-align: center;color: var(--mod-loader-font-col);">Error Occurred</h1>
+
+    <p style="font-size:1.5em;color: var(--mod-loader-font-col);">We have a site where mods will always work. We recommend playing there instead.</p>
+
+    <p><a href="${googlesnakemodscomHref}" style="color: var(--mod-loader-link-font-col);font-size:1.5em">googlesnakemods.com</a></p>
+
+    <div style="display: flex; justify-content: space-between">
+      <div id="close-try-gsm" class="mod-sel-btn" style="display:inline-block;background-color: var(--mod-loader-button-bg);padding: 4px;margin-top: 7px;margin-right:10px;border-radius: 3px;border: 2px solid var(--mod-loader-button-close-col);color: var(--mod-loader-button-close-col);font-weight: bold;user-select: none;cursor: pointer;">
+        Close
+      </div>
+      <div id="confirm-try-gsm" class="mod-sel-btn" style="display:inline-block;background-color: var(--mod-loader-button-bg);padding: 4px;margin-top: 7px;margin-right:10px;border-radius: 3px;border: 2px solid var(--mod-loader-button-apply-col);color: var(--mod-loader-button-apply-col);font-weight: bold;user-select: none;cursor: pointer;">
+        Play working version
+      </div>
+    </div>
+  </div>
+  `;
+
+  //Insert html for try-gsm dialogue box.
+  let tryGsmModalContainer = document.createElement('div');
+  tryGsmModalContainer.innerHTML = tryGsmPopup;
+  tryGsmModalContainer.id = 'try-gsm-dialogue-container';
+  tryGsmModalContainer.style = 'position:fixed; width:100%; height:100%; z-index: 10000000; left:0; top:0';
+  document.body.appendChild(tryGsmModalContainer);
+
+  //Dark theme - lazy code to grab advanced settings again
+  let advancedSettings = JSON.parse(localStorage.getItem('snakeAdvancedSettings')) ?? {};
+  if(advancedSettings && advancedSettings.darkModTheme) {
+    document.getElementById('try-gsm-dialogue-container').classList.add('dark-mod-theme');
+  }
+
+  document.getElementById('close-try-gsm').addEventListener('click', function() {
+    document.getElementById('try-gsm-dialogue-container').remove();
+  });
+  document.getElementById('confirm-try-gsm').addEventListener('click', function() {
+    location.href = googlesnakemodscomHref;
+  });
 }
 
 //Generate the game versions option dropdown for the mod-game-version select element
