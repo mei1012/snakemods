@@ -75,7 +75,15 @@ function switchToMobile() {
   snakeContainer.dataset.isMobile = '';
 
   //Delete fullscreen button
-  document.querySelector('img[src$="fullscreen_white_24dp.png"]').remove();
+  let fullscreenButtonOld = document.querySelector('img[src$="fullscreen_white_24dp.png"]')
+  if(fullscreenButtonOld) {
+    fullscreenButtonOld.remove();
+  }
+
+  let fullscreenButtonsNew = document.querySelectorAll('div.EFcTud[jsaction="zeJAAd"]');
+  if(fullscreenButtonsNew.length > 0) {
+    [...fullscreenButtonsNew].forEach(button => button.remove());
+  }
 
   //Add styles needed for mobile
   let css = `
