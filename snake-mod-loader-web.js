@@ -184,8 +184,8 @@ document.body.appendChild = function(el) {
   if(!isSrcCorrectFormat) return document.body.appendChildOld(el);
 
   //Check if we're actually running a mod
-  const currentlySelectedMod = localStorage.getItem('snakeChosenMod');
-  if(currentlySelectedMod === null || currentlySelectedMod === 'none') return document.body.appendChildOld(el);
+  const currentlySelectedMod = localStorage.getItem('snakeChosenMod') ?? 'none';
+  if(currentlySelectedMod === 'none') return document.body.appendChildOld(el);
 
   //default behaviour if we can't find any snake images on the webpage
   if(document.body.querySelector('img[src*="snake_arcade"]') === null && !window.location.href.includes('fbx?fbx=snake_arcade')) return document.body.appendChildOld(el);
@@ -503,7 +503,7 @@ let addModSelectorPopup = function() {
   let googlesnakemodscomHref = 'https://googlesnakemods.com/v/current/';
   let storedMod = localStorage.getItem('snakeChosenMod');
 
-  if(typeof storedMod === 'string' && /^[a-z0-9 ._]*$/i.test(storedMod)) {
+  if(typeof storedMod === 'string' && /^[a-z0-9 ._]*$/i.test(storedMod) && storedMod !== 'none') {
     googlesnakemodscomHref += 'index.html?mod=' + storedMod;
   }
 
@@ -807,7 +807,7 @@ let addModSelectorPopup = function() {
   });
 
   //Tick the currently selected mod choice according to localStorage. Also, set the mod name in the indicator
-  const currentlySelectedMod = localStorage.getItem('snakeChosenMod');
+  const currentlySelectedMod = localStorage.getItem('snakeChosenMod') ?? 'none';
   let newlySelectedMod = currentlySelectedMod;
 
   if(modsConfig.hasOwnProperty(currentlySelectedMod) && currentlySelectedMod !== null && currentlySelectedMod !== 'none') {
@@ -1410,8 +1410,8 @@ let addModSelectorPopup = function() {
 
   //It's possible that the snake code has changed URL or changed in some other way and we weren't able to alter it. If so then show an indicator.
   function checkFoundSnakeCode() {
-    const currentlySelectedMod = localStorage.getItem('snakeChosenMod');
-    if(currentlySelectedMod === null || currentlySelectedMod === 'none') {
+    const currentlySelectedMod = localStorage.getItem('snakeChosenMod') ?? 'none';
+    if(currentlySelectedMod === 'none') {
       //Don't worry about whether or not we've found the snake code since we're not running a mod.
       return;
     }
@@ -1448,7 +1448,7 @@ function showErrorTryGsmPopup() {
   let googlesnakemodscomHref = 'https://googlesnakemods.com/v/current/';
   let storedMod = localStorage.getItem('snakeChosenMod');
 
-  if(typeof storedMod === 'string' && /^[a-z0-9 ._]*$/i.test(storedMod)) {
+  if(typeof storedMod === 'string' && /^[a-z0-9 ._]*$/i.test(storedMod) && storedMod !== 'none') {
     googlesnakemodscomHref += 'index.html?mod=' + storedMod;
   }
 
